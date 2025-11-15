@@ -42,16 +42,22 @@ const corsOption = {
 app.use(cors(corsOption));
 
 // Static file serving for images
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-app.use("/assets", express.static(path.join(__dirname, "public/assets")));
+const isVercel = !!process.env.VERCEL;
+const uploadsStaticBase = isVercel ? "/tmp/uploads" : path.join(__dirname, "uploads");
+const assetsStaticBase = path.join(__dirname, "public/assets");
+app.use("/uploads", express.static(uploadsStaticBase));
+app.use("/assets", express.static(assetsStaticBase));
 app.use(express.json({ limit: "10mb" }));
 
-// Create upload directories if they don't exist
-const uploadDirs = ["uploads/profile-images", "assets/backend-img"];
+const writableBase = isVercel ? "/tmp" : __dirname;
+const uploadDirs = [
+  path.join(writableBase, "uploads", "profile-images"),
+  path.join(writableBase, "assets", "backend-img"),
+];
 uploadDirs.forEach(dir => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
-    console.log(`Created directory: ${dir}`);
+    console.log("Created directory: " + dir);
   }
 });
 // Handle multer errors
