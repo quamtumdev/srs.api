@@ -100,7 +100,7 @@ app.get("/api/student/materials/test", (req, res) => {
   res.json({ success: true, message: "Test route works" });
 });
 
-app.get("/route", (req, res) => {
+app.get("/", (req, res) => {
   res.json({ success: true, message: "Route is active", uptime: process.uptime() });
 });
 
